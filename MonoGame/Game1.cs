@@ -55,13 +55,15 @@ public class Game1 : Game
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        if (Keyboard.GetState().IsKeyDown(Keys.W))
+        if (Keyboard.GetState().IsKeyDown(Keys.W) && _player.Coordinate.Y > 0)
             _player.Coordinate.Y -= 6;
-        if (Keyboard.GetState().IsKeyDown(Keys.S))
+        if (Keyboard.GetState().IsKeyDown(Keys.S) 
+            && _player.Coordinate.Y < _graphics.PreferredBackBufferHeight - _player.Texture.Height * 2)
             _player.Coordinate.Y += 6;
-        if (Keyboard.GetState().IsKeyDown(Keys.A))
+        if (Keyboard.GetState().IsKeyDown(Keys.A) && _player.Coordinate.X > 0)
             _player.Coordinate.X -= 6;
-        if (Keyboard.GetState().IsKeyDown(Keys.D))
+        if (Keyboard.GetState().IsKeyDown(Keys.D) 
+            && _player.Coordinate.X < _graphics.PreferredBackBufferWidth - _player.Texture.Width * 2)
             _player.Coordinate.X += 6;
         
         
