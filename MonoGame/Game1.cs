@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Character;
-using SharpDX.Direct2D1.Effects;
 
 namespace MonoGame;
 
@@ -13,6 +14,8 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private Player _player;
     private Background _backGround;
+    private List<ShootingControl> _bullets = new ();
+    private ButtonState _previousButtonState;
 
     public Game1()
     {
@@ -23,6 +26,10 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
+        _graphics.PreferredBackBufferWidth = 1280;
+        _graphics.PreferredBackBufferHeight = 720;
+        _graphics.ApplyChanges();
+        
         _player = new Player();
         _backGround = new Background();
 
@@ -33,13 +40,8 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        _graphics.PreferredBackBufferWidth = 1280;
-        _graphics.PreferredBackBufferHeight = 720;
-        _graphics.ApplyChanges();
-        
         _player.Texture = Texture2D.FromFile(GraphicsDevice,"Images/Player/ship-1.png");
         _backGround.Texture = Texture2D.FromFile(GraphicsDevice, "Images/Player/Screenshot_6.png");
-        
 
         _player.Coordinate =
             new Vector2(
@@ -61,6 +63,25 @@ public class Game1 : Game
             _player.Coordinate.X -= 6;
         if (Keyboard.GetState().IsKeyDown(Keys.D))
             _player.Coordinate.X += 6;
+        
+        
+        if (Mouse.GetState().LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton != _previousButtonState)
+        {
+            var shootingControl = new ShootingControl();
+            shootingControl.Texture = shootingControl.DrawTexture(GraphicsDevice);
+            shootingControl.BulletPath = 
+                new Vector2(_player.Coordinate.X + _player.Texture.Width / 2 * 1.8f, _player.Coordinate.Y);
+            _bullets.Add(shootingControl);
+        }
+
+        _previousButtonState = Mouse.GetState().LeftButton;
+
+        foreach (var bullet in _bullets)
+        {
+            bullet.BulletPath.Y -= 15;
+        }
+
+        _bullets = _bullets.Where(x => x.BulletPath.Y >= 0).ToList();
 
         base.Update(gameTime);
     }
@@ -70,9 +91,19 @@ public class Game1 : Game
         _spriteBatch.Begin();
         
         _spriteBatch.Draw(_backGround.Texture, new Vector2(-1, 0), Color.Purple);
+        
         _spriteBatch.Draw(_player.Texture, _player.Coordinate, null, 
             Color.GhostWhite, 0, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
-        
+
+        if (_bullets != null)
+        {
+            foreach (var bullet in _bullets)
+            {
+                _spriteBatch.Draw(bullet.Texture, bullet.BulletPath, null,
+                    Color.White, (float)Math.PI / 2, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
+            }
+        }
+
         _spriteBatch.End();
         
         base.Draw(gameTime);
