@@ -48,6 +48,7 @@ public class Game1 : Game
             Exit();
 
         _player.PlayerControls(_graphics);
+        _player.TurnPlayer();
 
         if (Mouse.GetState().LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton != _previousButtonState)
         {
@@ -75,7 +76,7 @@ public class Game1 : Game
         _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
         
         _spriteBatch.Draw(_player.Texture, _player.Coordinate, null, 
-            Color.GhostWhite, 0, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
+            Color.GhostWhite, _player.Angle, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
 
         if (_bullets != null)
         {
