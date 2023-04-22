@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,7 +13,7 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private Player _player;
     private Texture2D _backGround;
-    private List<Bullet> _bullets = new ();
+    private List<Bullet> _bullets = new();
     private ButtonState _previousButtonState;
 
     public Game1()
@@ -47,33 +46,22 @@ public class Game1 : Game
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        _player.PlayerControls(_graphics);
+        _player.MovePlayer(_graphics);
         _player.TurnPlayer();
 
         if (Mouse.GetState().LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton != _previousButtonState)
         {
-            var bullet = new Bullet();
-            bullet.Texture = bullet.DrawTexture(GraphicsDevice);
-            bullet.SpawnPoint = 
-                new Vector2(_player.Coordinate.X, _player.Coordinate.Y);
-            
-            var line1 = bullet.SpawnPoint.X - Mouse.GetState().X;
-            var line2 = bullet.SpawnPoint.Y - Mouse.GetState().Y;
+            var bullet = new Bullet(GraphicsDevice, _player);
 
-            var newVector = new Vector2(line1, line2);
-            newVector.Normalize();
-            bullet.Velocity = newVector * 5;
+            bullet.BuildBulletPath();
             
-            bullet.Angle = _player.Angle + (float)Math.PI / 2;
             _bullets.Add(bullet);
         }
 
         _previousButtonState = Mouse.GetState().LeftButton;
 
         foreach (var bullet in _bullets)
-        {
-            bullet.SpawnPoint -= bullet.Velocity;
-        }
+            bullet.GetBulletVelocity();
         
         _bullets = _bullets.Where(x => x.SpawnPoint.Y >= 0).ToList();
 
@@ -87,19 +75,10 @@ public class Game1 : Game
         _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
         
         if (_bullets != null)
-        {
             foreach (var bullet in _bullets)
-            {
-                _spriteBatch.Draw(bullet.Texture, bullet.SpawnPoint, null,
-                    Color.White, bullet.Angle,
-                    Vector2.Zero, 1.8f, SpriteEffects.None, 0);
-            }
-        }
+                bullet.Draw(_spriteBatch);
         
-        _spriteBatch.Draw(_player.Texture, _player.Coordinate, null, 
-            Color.GhostWhite, _player.Angle, 
-            new Vector2(_player.Texture.Width / 2, _player.Texture.Height / 2),
-            1.8f, SpriteEffects.None, 0);
+        _player.Draw(_spriteBatch);
 
         _spriteBatch.End();
         
