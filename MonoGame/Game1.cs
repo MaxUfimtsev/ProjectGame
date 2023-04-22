@@ -48,22 +48,34 @@ public class Game1 : Game
             Exit();
 
         _player.PlayerControls(_graphics);
+        _player.TurnPlayer();
 
         if (Mouse.GetState().LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton != _previousButtonState)
         {
-            var shootingControl = new Bullet();
-            shootingControl.Texture = shootingControl.DrawTexture(GraphicsDevice);
-            shootingControl.BulletPath = 
-                new Vector2(_player.Coordinate.X + _player.Texture.Width / 2 * 1.8f, _player.Coordinate.Y);
-            _bullets.Add(shootingControl);
+            var bullet = new Bullet();
+            bullet.Texture = bullet.DrawTexture(GraphicsDevice);
+            bullet.SpawnPoint = 
+                new Vector2(_player.Coordinate.X, _player.Coordinate.Y);
+            
+            var line1 = bullet.SpawnPoint.X - Mouse.GetState().X;
+            var line2 = bullet.SpawnPoint.Y - Mouse.GetState().Y;
+
+            var newVector = new Vector2(line1, line2);
+            newVector.Normalize();
+            bullet.Velocity = newVector * 5;
+            
+            bullet.Angle = _player.Angle + (float)Math.PI / 2;
+            _bullets.Add(bullet);
         }
 
         _previousButtonState = Mouse.GetState().LeftButton;
 
         foreach (var bullet in _bullets)
-            bullet.BulletPath.Y -= 15;
+        {
+            bullet.SpawnPoint -= bullet.Velocity;
+        }
         
-        _bullets = _bullets.Where(x => x.BulletPath.Y >= 0).ToList();
+        _bullets = _bullets.Where(x => x.SpawnPoint.Y >= 0).ToList();
 
         base.Update(gameTime);
     }
@@ -74,17 +86,20 @@ public class Game1 : Game
         
         _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
         
-        _spriteBatch.Draw(_player.Texture, _player.Coordinate, null, 
-            Color.GhostWhite, 0, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
-
         if (_bullets != null)
         {
             foreach (var bullet in _bullets)
             {
-                _spriteBatch.Draw(bullet.Texture, bullet.BulletPath, null,
-                    Color.White, (float)Math.PI / 2, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
+                _spriteBatch.Draw(bullet.Texture, bullet.SpawnPoint, null,
+                    Color.White, bullet.Angle,
+                    Vector2.Zero, 1.8f, SpriteEffects.None, 0);
             }
         }
+        
+        _spriteBatch.Draw(_player.Texture, _player.Coordinate, null, 
+            Color.GhostWhite, _player.Angle, 
+            new Vector2(_player.Texture.Width / 2, _player.Texture.Height / 2),
+            1.8f, SpriteEffects.None, 0);
 
         _spriteBatch.End();
         

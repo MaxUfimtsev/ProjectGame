@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,6 +9,7 @@ public class Player
 {
     public Vector2 Coordinate;
     public Texture2D Texture;
+    public float Angle;
 
     public Player(GraphicsDevice graphics, Rectangle window)
     {
@@ -27,5 +29,15 @@ public class Player
         if (Keyboard.GetState().IsKeyDown(Keys.D) 
             && Coordinate.X < graphics.PreferredBackBufferWidth - Texture.Width * 2)
             Coordinate.X += 6;
+    }
+
+    public void TurnPlayer()
+    {
+        var line1 = Coordinate.X - Mouse.GetState().X;
+        var line2 = Coordinate.Y - Mouse.GetState().Y;
+
+        var tg = line1 / line2;
+
+        Angle = -(float)Math.Atan(tg) + (line2 < 0 ? 135 : 0);
     }
 }
