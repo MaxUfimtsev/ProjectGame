@@ -38,6 +38,6 @@ public class Player
 
         var tg = line1 / line2;
 
-        Angle = (float)Math.Atan(tg) + 180;
+        Angle = -(float)Math.Atan(tg) + (line2 < 0 ? 135 : 0);
     }
 }
