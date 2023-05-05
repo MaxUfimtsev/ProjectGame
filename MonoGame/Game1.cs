@@ -12,6 +12,7 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Player _player;
+    private List<Enemy> _enemies = new();
     private Texture2D _backGround;
     private List<Bullet> _bullets = new();
     private ButtonState _previousButtonState;
@@ -49,21 +50,27 @@ public class Game1 : Game
         _player.MovePlayer(_graphics);
         _player.TurnPlayer();
 
-        if (Mouse.GetState().LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton != _previousButtonState)
-        {
-            var bullet = new Bullet(GraphicsDevice, _player);
-
-            bullet.BuildBulletPath();
-            
-            _bullets.Add(bullet);
-        }
-
-        _previousButtonState = Mouse.GetState().LeftButton;
-
-        foreach (var bullet in _bullets)
-            bullet.GetBulletVelocity();
+        var newBullet =
+            SpawnObjects.SpawnBullet(GraphicsDevice, _player, Window.ClientBounds, ref _previousButtonState);
         
-        _bullets = _bullets.Where(x => x.SpawnPoint.Y >= 0).ToList();
+        if (newBullet != null)
+            _bullets.Add(newBullet);
+        
+        foreach (var bullet in _bullets)
+            bullet.Move();
+        
+        _bullets = _bullets.Where(x => x.IsInField(Window.ClientBounds)).ToList();
+
+        
+        var newEnemy = SpawnObjects.SpawnMeteor(GraphicsDevice, Window.ClientBounds, _player);
+        
+        if (newEnemy != null)
+            _enemies.Add(newEnemy);
+
+        foreach (var enemy in _enemies)
+            enemy.Move();
+        
+        _enemies = _enemies.Where(x => !x.CheckCollision(_player)).ToList();
 
         base.Update(gameTime);
     }
@@ -73,13 +80,15 @@ public class Game1 : Game
         _spriteBatch.Begin();
         
         _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
-        
-        if (_bullets != null)
-            foreach (var bullet in _bullets)
-                bullet.Draw(_spriteBatch);
+
+        foreach (var bullet in _bullets)
+            bullet.Draw(_spriteBatch);
+
+        foreach (var enemy in _enemies)
+            enemy.Draw(_spriteBatch);
         
         _player.Draw(_spriteBatch);
-
+        
         _spriteBatch.End();
         
         base.Draw(gameTime);
