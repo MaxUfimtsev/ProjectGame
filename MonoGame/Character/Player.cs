@@ -10,11 +10,12 @@ public class Player
     public Vector2 Coordinate;
     public readonly Texture2D Texture;
     public float Angle;
+    public Rectangle HitBox;
 
     public Player(GraphicsDevice graphics, Rectangle window)
     {
         Texture = Texture2D.FromFile(graphics, "Images/Player/ship-1.png");
-        Coordinate = new Vector2(window.Width * 0.46f, window.Height * 0.48f);
+        Coordinate = new Vector2(window.Width * 0.5f, window.Height * 0.5f);
     }
 
     public void MovePlayer(GraphicsDeviceManager graphics)
@@ -29,6 +30,8 @@ public class Player
         if (Keyboard.GetState().IsKeyDown(Keys.D) 
             && Coordinate.X < graphics.PreferredBackBufferWidth - Texture.Width)
             Coordinate.X += 6;
+        
+        UpdateHitBox();
     }
 
     public void TurnPlayer()
@@ -39,6 +42,12 @@ public class Player
         var tg = line1 / line2;
 
         Angle = -(float)Math.Atan(tg) + (line2 < 0 ? 135 : 0);
+    }
+    
+    public void UpdateHitBox()
+    {
+        HitBox = new Rectangle((int)Coordinate.X, (int)Coordinate.Y, 
+            Texture.Width * 2, Texture.Height * 2);
     }
 
     public void Draw(SpriteBatch spriteBatch)
