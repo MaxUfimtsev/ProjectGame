@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,6 +13,7 @@ public class Player
     public readonly Texture2D Texture;
     public float Angle;
     public Rectangle HitBox;
+    public int Health = 3;
 
     public Player(GraphicsDevice graphics, Rectangle window)
     {
@@ -34,6 +37,13 @@ public class Player
         UpdateHitBox();
     }
 
+    public void UpdateHealth(List<Enemy> enemies)
+    {
+        foreach (var enemy in enemies)
+            if (HitBox.Intersects(enemy.HitBox))
+                Health--;
+    }
+
     public void TurnPlayer()
     {
         var line1 = Coordinate.X - Mouse.GetState().X;
@@ -44,7 +54,7 @@ public class Player
         Angle = -(float)Math.Atan(tg) + (line2 < 0 ? 135 : 0);
     }
     
-    public void UpdateHitBox()
+    private void UpdateHitBox()
     {
         HitBox = new Rectangle((int)Coordinate.X, (int)Coordinate.Y, 
             Texture.Width * 2, Texture.Height * 2);

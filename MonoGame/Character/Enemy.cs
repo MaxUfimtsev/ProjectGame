@@ -11,6 +11,7 @@ public class Enemy
     public Vector2 Velocity;
     public float Rotation;
     public Rectangle HitBox;
+    public int HitsCounter;
 
     public Enemy(GraphicsDevice graphics, Rectangle window, Player player)
     {
@@ -29,9 +30,17 @@ public class Enemy
         BuildMeteorPath(player);
     }
 
-    public bool CheckCollision(Player player)
+    public bool CheckCollisionWithPlayer(Player player)
     {
         return HitBox.Intersects(player.HitBox);
+    }
+
+    public bool CheckCollisionWithBullet(Bullet bullet)
+    {
+        if (HitBox.Intersects(bullet.HitBox))
+            HitsCounter++;
+
+        return HitsCounter == 2;
     }
     
     public void BuildMeteorPath(Player player)
@@ -51,7 +60,7 @@ public class Enemy
         UpdateHitBox();
     }
 
-    public void UpdateHitBox()
+    private void UpdateHitBox()
     {
         HitBox = new Rectangle((int)Coordinate.X, (int)Coordinate.Y,
             (int)(Texture.Width * 0.05), (int)(Texture.Height * 0.05));

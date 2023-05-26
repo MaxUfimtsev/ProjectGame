@@ -35,3 +35,4 @@ C:\Users\MAX\Desktop\RiderProjects\Sol\MonoGame\MonoGame\obj\Debug\net6.0-window
 C:\Users\MAX\Desktop\RiderProjects\Sol\MonoGame\MonoGame\obj\Debug\net6.0-windows\MonoGame.pdb
 C:\Users\MAX\Desktop\RiderProjects\Sol\MonoGame\MonoGame\obj\Debug\net6.0-windows\MonoGame.genruntimeconfig.cache
 C:\Users\MAX\Desktop\RiderProjects\Sol\MonoGame\MonoGame\obj\Debug\net6.0-windows\ref\MonoGame.dll
+C:\Users\MAX\Desktop\RiderProjects\Sol\MonoGame\MonoGame\bin\Debug\net6.0-windows\Content\Font.xnb
