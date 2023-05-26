@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Character;
+using MonoGame.GameStates;
 
 namespace MonoGame;
 
@@ -16,6 +17,9 @@ public class Game1 : Game
     private Texture2D _backGround;
     private List<Bullet> _bullets = new();
     private ButtonState _previousButtonState;
+    private SpriteFont _font;
+    private State _state = State.Menu;
+    private GameMenu _gameMenu;
 
     public Game1()
     {
@@ -29,8 +33,10 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;
         _graphics.ApplyChanges();
-        
+
+        _gameMenu = new GameMenu(GraphicsDevice, Window);
         _player = new Player(GraphicsDevice, Window.ClientBounds);
+        _font = Content.Load<SpriteFont>("Font");
 
         base.Initialize();
     }
@@ -46,10 +52,36 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+        
+        if (_state == State.Menu)
+            UpdateMenu();
 
-        _player.MovePlayer(_graphics);
-        _player.TurnPlayer();
+        if (_state == State.Game)
+            UpdateGame();
 
+        base.Update(gameTime);
+    }
+
+    protected override void Draw(GameTime gameTime)
+    {
+        _spriteBatch.Begin();
+        
+        if (_state == State.Menu)
+            DrawMenu();
+
+        if (_state == State.Game)
+            DrawGame();
+        
+        if (_state == State.EndGame)
+            DrawEndGame();
+        
+        _spriteBatch.End();
+        
+        base.Draw(gameTime);
+    }
+
+    private void UpdateGame()
+    {
         var newBullet =
             SpawnObjects.SpawnBullet(GraphicsDevice, _player, Window.ClientBounds, ref _previousButtonState);
         
@@ -70,16 +102,22 @@ public class Game1 : Game
         foreach (var enemy in _enemies)
             enemy.Move();
         
-        _enemies = _enemies.Where(x => !x.CheckCollision(_player)).ToList();
+        _player.MovePlayer(_graphics);
+        _player.TurnPlayer();
+        _player.UpdateHealth(_enemies);
 
-        base.Update(gameTime);
+        _enemies = _enemies.Where(x => !x.CheckCollisionWithPlayer(_player) 
+                                       && _bullets.All(b => !x.CheckCollisionWithBullet(b))).ToList();
+
+        if (_player.Health == 0)
+            _state = State.EndGame;
     }
 
-    protected override void Draw(GameTime gameTime)
+    private void DrawGame()
     {
-        _spriteBatch.Begin();
-        
         _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
+        
+        _spriteBatch.DrawString(_font, _player.Health.ToString(), new Vector2(20, 20), Color.Aquamarine);
 
         foreach (var bullet in _bullets)
             bullet.Draw(_spriteBatch);
@@ -88,9 +126,28 @@ public class Game1 : Game
             enemy.Draw(_spriteBatch);
         
         _player.Draw(_spriteBatch);
+    }
+
+    private void UpdateMenu()
+    {
+        _state = _gameMenu.IsStartPressed();
+    }
+    
+    private void DrawMenu()
+    {
+        _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
+
+        _spriteBatch.DrawString(_font, "PLAY", 
+            new Vector2(Window.ClientBounds.Width * 0.485f, Window.ClientBounds.Height * 0.45f), 
+            Color.Aquamarine);
         
-        _spriteBatch.End();
-        
-        base.Draw(gameTime);
+        _spriteBatch.DrawString(_font, "EXIT",
+            new Vector2(Window.ClientBounds.Width * 0.488f, Window.ClientBounds.Height * 0.49f),
+            Color.Aquamarine);
+    }
+
+    private void DrawEndGame()
+    {
+        _spriteBatch.Draw(_backGround, new Vector2(-1, 0), Color.Purple);
     }
 }
