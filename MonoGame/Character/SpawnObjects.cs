@@ -7,16 +7,13 @@ namespace MonoGame.Character;
 
 public static class SpawnObjects
 {
-    public static Bullet SpawnBullet(GraphicsDevice graphicsDevice, 
-        Player player, Rectangle window, ref ButtonState previousButtonState)
+    public static Bullet SpawnBullet(GraphicsDevice graphicsDevice, Player player, ref ButtonState previousButtonState)
     {
         Bullet bullet = null;
         
         if (Mouse.GetState().LeftButton == ButtonState.Pressed && Mouse.GetState().LeftButton != previousButtonState)
-        {
-            bullet = new Bullet(graphicsDevice, player, window);
-        }
-
+            bullet = new Bullet(graphicsDevice, player);
+        
         previousButtonState = Mouse.GetState().LeftButton;
 
         return bullet;

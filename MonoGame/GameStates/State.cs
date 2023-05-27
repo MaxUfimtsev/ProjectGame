@@ -4,5 +4,6 @@ public enum State
 {
     Menu,
     Game,
-    EndGame
+    EndGame,
+    Pause
 }
