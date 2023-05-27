@@ -14,6 +14,7 @@ public class Player
     public float Angle;
     public Rectangle HitBox;
     public int Health = 3;
+    // public int Score = 0;
 
     public Player(GraphicsDevice graphics, Rectangle window)
     {
@@ -39,10 +40,21 @@ public class Player
 
     public void UpdateHealth(List<Enemy> enemies)
     {
-        foreach (var enemy in enemies)
-            if (HitBox.Intersects(enemy.HitBox))
-                Health--;
+        foreach (var enemy in enemies.Where(enemy => HitBox.Intersects(enemy.HitBox)))
+            Health--;
     }
+
+    // public void UpdateScore(List<Enemy> enemies, List<Bullet> bullets)
+    // {
+    //     foreach (var enemy in enemies)
+    //     {
+    //         foreach (var bullet in bullets)
+    //         {
+    //             if (bullet.HitBox.Intersects(enemy.HitBox))
+    //                 Score += 5;
+    //         }
+    //     }
+    // }
 
     public void TurnPlayer()
     {

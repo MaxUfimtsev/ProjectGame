@@ -37,7 +37,7 @@ public class Enemy
 
     public bool CheckCollisionWithBullet(Bullet bullet)
     {
-        if (HitBox.Intersects(bullet.HitBox))
+        if (bullet.HitBox.Intersects(HitBox))
             HitsCounter++;
 
         return HitsCounter == 2;

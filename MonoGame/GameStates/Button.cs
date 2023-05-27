@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -20,16 +21,18 @@ public class Button
         Location = location;
         Texture = texture;
         Scale = scale;
-        _hitbox = new Rectangle(Location.ToPoint(), new Point((int)(texture.Width * scale), (int)(texture.Height * scale)));
+        _hitbox = new Rectangle(Location.ToPoint(), 
+            new Point((int)(texture.Width * scale), (int)(texture.Height * scale)));
     }
 
-    public bool IsPressed(Vector2 mouseLocation)
+    public bool IsPressed(Point mouseLocation)
     {
-        return _hitbox.Contains(mouseLocation);
+        return _hitbox.Contains(mouseLocation) && Mouse.GetState().LeftButton == ButtonState.Pressed;
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(Texture, Location, null, Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, 0);
+        spriteBatch.Draw(Texture, Location, null, 
+            Color.White, 0, Vector2.Zero, Scale, SpriteEffects.None, 0);
     }
 }

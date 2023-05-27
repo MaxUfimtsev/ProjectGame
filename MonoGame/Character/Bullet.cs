@@ -13,7 +13,7 @@ public class Bullet
     private Vector2 _velocity;
     public Rectangle HitBox;
 
-    public Bullet(GraphicsDevice graphics, Player player, Rectangle window)
+    public Bullet(GraphicsDevice graphics, Player player)
     {
         _texture = Texture2D.FromFile(graphics, "Images/Shooting/1.png");
         _coordinate = new Vector2(player.Coordinate.X, player.Coordinate.Y);
@@ -27,6 +27,11 @@ public class Bullet
                && _coordinate.Y <= window.Height
                && _coordinate.X >= 0
                && _coordinate.X <= window.Width;
+    }
+
+    public bool CheckCollisionWithMeteor(Enemy enemy)
+    {
+        return HitBox.Intersects(enemy.HitBox);
     }
 
     private void BuildBulletPath()
