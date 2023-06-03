@@ -7,15 +7,14 @@ namespace MonoGame.Character;
 
 public class Bullet
 {
-    private readonly Texture2D _texture;
-    private Vector2 _coordinate;
-    private readonly float _angle;
-    private Vector2 _velocity;
+    public static Texture2D Texture;
     public Rectangle HitBox;
+    private Vector2 _coordinate;
+    private Vector2 _velocity;
+    private readonly float _angle;
 
-    public Bullet(GraphicsDevice graphics, Player player)
+    public Bullet(Player player)
     {
-        _texture = Texture2D.FromFile(graphics, "Images/Shooting/1.png");
         _coordinate = new Vector2(player.Coordinate.X, player.Coordinate.Y);
         _angle = player.Angle + (float)Math.PI / 2;
         BuildBulletPath();
@@ -29,11 +28,15 @@ public class Bullet
                && _coordinate.X <= window.Width;
     }
 
-    public bool CheckCollisionWithMeteor(Enemy enemy)
-    {
-        return HitBox.Intersects(enemy.HitBox);
-    }
+    public bool CheckCollisionWithMeteor(Enemy enemy) =>
+        HitBox.Intersects(enemy.HitBox);
 
+    public void Move()
+    {
+        _coordinate -= _velocity;
+        UpdateHitBox();
+    }
+    
     private void BuildBulletPath()
     {
         var mousePointX = _coordinate.X - Mouse.GetState().X;
@@ -43,23 +46,16 @@ public class Bullet
         mousePoint.Normalize();
         _velocity = mousePoint * 35;
     }
-
-    public void Move()
-    {
-        _coordinate -= _velocity;
-        
-        UpdateHitBox();
-    }
     
     private void UpdateHitBox()
     {
         HitBox = new Rectangle((int)_coordinate.X, (int)_coordinate.Y, 
-            (int)(_texture.Width * 1.8), (int)(_texture.Height * 1.8));
+            (int)(Texture.Width * 1.8), (int)(Texture.Height * 1.8));
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(_texture, _coordinate, null, Color.White, 
+        spriteBatch.Draw(Texture, _coordinate, null, Color.White, 
             _angle, Vector2.Zero, 1.8f, SpriteEffects.None, 0);
     }
 }

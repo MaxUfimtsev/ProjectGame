@@ -26,23 +26,25 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-        _font = Content.Load<SpriteFont>("Font");
-
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;
         _graphics.ApplyChanges();
-
-        _player = new Player(GraphicsDevice, Window.ClientBounds);
-        _gameMenu = new GameMenu(GraphicsDevice, Window.ClientBounds, _spriteBatch);
-        _gameOn = new GameOn(_graphics, GraphicsDevice, Window, _player, _font, _spriteBatch);
-        _gamePause = new GamePause(_spriteBatch, GraphicsDevice, Window.ClientBounds);
-
+        
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
+        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        _font = Content.Load<SpriteFont>("Font");
+        
+        _player = new Player(GraphicsDevice, Window.ClientBounds);
+        _gameMenu = new GameMenu(GraphicsDevice, Window.ClientBounds, _spriteBatch);
+        _gameOn = new GameOn(_graphics, GraphicsDevice, Window, _player, _font, _spriteBatch);
+        _gamePause = new GamePause(_spriteBatch, GraphicsDevice, Window.ClientBounds);
+
+        Enemy.Texture = Texture2D.FromFile(GraphicsDevice, "Images/Enemy/Meteor.png");
+        Bullet.Texture = Texture2D.FromFile(GraphicsDevice, "Images/Shooting/1.png");
     }
 
     protected override void Update(GameTime gameTime)
@@ -69,17 +71,21 @@ public class Game1 : Game
     {
         _spriteBatch.Begin();
         
-        if (_state == State.Menu)
-            _gameMenu.DrawMenu();
-
-        if (_state == State.Game)
-            _gameOn.DrawGame();
-        
-        if (_state == State.EndGame)
-            DrawEndGame();
-        
-        if (_state == State.Pause)
-            _gamePause.DrawPause();
+        switch (_state)
+        {
+            case State.Menu:
+                _gameMenu.DrawMenu();
+                break;
+            case State.Game:
+                _gameOn.DrawGame();
+                break;
+            case State.EndGame:
+                DrawEndGame();
+                break;
+            case State.Pause:
+                _gamePause.DrawPause();
+                break;
+        }
 
         _spriteBatch.End();
         

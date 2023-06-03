@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,16 +8,15 @@ namespace MonoGame.Character;
 
 public class Enemy
 {
-    public readonly Texture2D Texture;
+    public static Texture2D Texture;
     public Vector2 Coordinate;
     public Vector2 Velocity;
     public float Rotation;
     public Rectangle HitBox;
     public int HitsCounter;
 
-    public Enemy(GraphicsDevice graphics, Rectangle window, Player player)
+    public Enemy(Rectangle window, Player player)
     {
-        Texture = Texture2D.FromFile(graphics, "Images/Enemy/Meteor.png");
         var random = new Random();
         var side = random.Next(1, 4);
         if (side == 1)
@@ -30,20 +31,24 @@ public class Enemy
         BuildMeteorPath(player);
     }
 
-    public bool CheckCollisionWithPlayer(Player player)
+    public bool CheckCollisionWithPlayer(Player player) =>
+        HitBox.Intersects(player.HitBox);
+    
+    public bool CheckCollisionWithBullet(List<Bullet> bullets)
     {
-        return HitBox.Intersects(player.HitBox);
-    }
-
-    public bool CheckCollisionWithBullet(Bullet bullet)
-    {
-        if (bullet.HitBox.Intersects(HitBox))
+        foreach (var bullet in bullets.Where(bullet => bullet.HitBox.Intersects(HitBox)))
             HitsCounter++;
 
         return HitsCounter == 2;
     }
+
+    public void Move()
+    {
+        Coordinate -= Velocity;
+        UpdateHitBox();
+    }
     
-    public void BuildMeteorPath(Player player)
+    private void BuildMeteorPath(Player player)
     {
         var pointX = Coordinate.X - player.Coordinate.X;
         var pointY = Coordinate.Y - player.Coordinate.Y;
@@ -51,13 +56,6 @@ public class Enemy
         var path = new Vector2(pointX, pointY);
         path.Normalize();
         Velocity = path * 7;
-    }
-
-    public void Move()
-    {
-        Coordinate -= Velocity;
-        
-        UpdateHitBox();
     }
 
     private void UpdateHitBox()
