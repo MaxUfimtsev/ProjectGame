@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -28,8 +29,14 @@ public class Bullet
                && _coordinate.X <= window.Width;
     }
 
-    public bool CheckCollisionWithMeteor(Enemy enemy) =>
-        HitBox.Intersects(enemy.HitBox);
+    public bool CheckCollisionWithMeteor(List<Enemy> enemies)
+    {
+        foreach (var enemy in enemies)
+            if (HitBox.Intersects(enemy.HitBox))
+                return true;
+
+        return false;
+    }
 
     public void Move()
     {

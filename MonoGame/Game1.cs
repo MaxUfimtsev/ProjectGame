@@ -38,13 +38,15 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _font = Content.Load<SpriteFont>("Font");
         
-        _player = new Player(GraphicsDevice, Window.ClientBounds);
+        _player = new Player(Window.ClientBounds, _graphics);
         _gameMenu = new GameMenu(GraphicsDevice, Window.ClientBounds, _spriteBatch);
-        _gameOn = new GameOn(_graphics, GraphicsDevice, Window, _player, _font, _spriteBatch);
+        _gameOn = new GameOn(Window, _player, _font, _spriteBatch);
         _gamePause = new GamePause(_spriteBatch, GraphicsDevice, Window.ClientBounds);
-
+        
         Enemy.Texture = Texture2D.FromFile(GraphicsDevice, "Images/Enemy/Meteor.png");
         Bullet.Texture = Texture2D.FromFile(GraphicsDevice, "Images/Shooting/1.png");
+        Player.Texture = Texture2D.FromFile(GraphicsDevice, "Images/Player/ship-1.png");
+        GameOn.BackGround = Texture2D.FromFile(GraphicsDevice, "Images/Player/Screenshot_6.png");
     }
 
     protected override void Update(GameTime gameTime)

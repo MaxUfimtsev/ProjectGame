@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Character;
 
-namespace MonoGame.Hood;
+namespace MonoGame.HUD;
 
 public class GameHUD
 {
@@ -17,7 +17,7 @@ public class GameHUD
         _spriteBatch = spriteBatch;
     }
     
-    public void DrawHood()
+    public void DrawHud()
     {
         _spriteBatch.DrawString(_font, $"Health: {_player.Health.ToString()}", 
             new Vector2(20, 20), Color.Aquamarine);
